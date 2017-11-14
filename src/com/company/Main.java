@@ -29,11 +29,6 @@ public class Main {
         */
         URL url = new URL("http://api.openweathermap.org/data/2.5/forecast?q=Seattle&cnt=7&appid=2b290376f4e81ff3eb5ef82867095610");
         URLConnection con = url.openConnection();
-       // File weatherCache = new File("weatherCache.json");
-        //FileOutputStream writer = new FileOutputStream(weatherCache);
-
-        //InputStream inputStream = con.getInputStream();
-        //File weatherCache = new File();
         File weatherCache = new File("data.json");
 
 
@@ -45,24 +40,19 @@ public class Main {
             char ch = (char)i;
             data = data + ch;
         }
+        JSONObject obj = new JSONObject(data);
+        JSONArray forecastArray = obj.getJSONArray("list");
+
+        /*
+        Testing Print Statements
         System.out.println(data);
 
-        JSONObject obj = new JSONObject(weatherCache);
-        String str = "{ \"cod\":\"200\",\"message\":0.1746,\"cnt\":7}";
-        JSONObject obj2 = new JSONObject(str);
-        String n = obj2.getString("cod");
-        int j = obj2.getInt("message");
-        System.out.println(n);
-        System.out.println(j);
+        String owmVersion = obj.getString("cod");
+        System.out.println(owmVersion);
 
-
-        //String owmVersion = obj.getJSONObject("cod").getString("omwVersion");
-        /*
-        BufferedReader bufferedReader = new BufferedReader((new InputStreamReader(inputStream)));
-        String line = null;
-        while((line = bufferedReader.readLine()) != null){
-            System.out.println(line);
-        }
+        String nestingTest = forecastArray.getJSONObject(0).getJSONArray("weather").getJSONObject(0).getString("description");
+        //This goes to list->day0->weather->description
+        System.out.println(nestingTest);
         */
 
     }
