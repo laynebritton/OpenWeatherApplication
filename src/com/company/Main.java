@@ -24,19 +24,23 @@ public class Main {
         f.setLayout(null);
         f.setVisible(true);
         */
-        URL url = new URL("http://api.openweathermap.org/data/2.5/forecast?q=Seattle&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610");
-        URLConnection con = url.openConnection();
-        File weatherCache = new File("data2.json");
+        WeatherRetriever weatherRetriever = new WeatherRetriever();
+        weatherRetriever.getForecast("90059",1);
 
-
+        //Open json data and put it into a string so it can be manipulated
+        File weatherCache = new File("data3.json");
+        int i;
         FileReader fileReader = new FileReader(weatherCache);
         String data = "";
 
-        int i;
+
         while((i = fileReader.read())!=-1){
             char ch = (char)i;
             data = data + ch;
         }
+        fileReader.close();
+        //Data is now in string
+
         JSONObject obj = new JSONObject(data);
         JSONArray forecastArray = obj.getJSONArray("list");
 
