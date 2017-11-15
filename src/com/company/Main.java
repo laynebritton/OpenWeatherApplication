@@ -1,5 +1,6 @@
 package com.company;
 import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -44,6 +45,7 @@ public class Main {
         JSONObject obj = new JSONObject(data);
         JSONArray forecastArray = obj.getJSONArray("list");
 
+        MenuExample menuExample = new MenuExample();
         WeatherDay[] forecast = new WeatherDay[16];
         for(i = 0; i < 7; i++){
             forecast[i] = new WeatherDay(i);
@@ -77,13 +79,4 @@ public class Main {
         */
 
     }
-
-
-    public void callApi() throws Exception {
-        URL url = new URL("http://api.openweathermap.org/data/2.5/forecast?q=Seattle&cnt=7&appid=2b290376f4e81ff3eb5ef82867095610");
-        URLConnection con = url.openConnection();
-
-
-    }
-
 }
