@@ -14,19 +14,9 @@ public class Main {
     //This is an api call that worked for forecast
     //http://api.openweathermap.org/data/2.5/forecast?q=Seattle&cnt=7&appid=2b290376f4e81ff3eb5ef82867095610
     public static void main(String[] args) throws Exception {
-        JFrame f = new JFrame("OpenWeather Application");
 
-        /*
-        weatherButton a = new weatherButton("Daily Weather",0,0,100,140);
-        JButton b = new JButton("Click");
-        b.setBounds(0,0,100,60);
-        f.add(b);
-        f.setSize(600,800);
-        f.setLayout(null);
-        f.setVisible(true);
-        */
         WeatherRetriever weatherRetriever = new WeatherRetriever();
-        weatherRetriever.getForecast("90059",1);
+        weatherRetriever.getForecast("Seattle",0);
 
         //Open json data and put it into a string so it can be manipulated
         File weatherCache = new File("data3.json");
@@ -66,6 +56,9 @@ public class Main {
             System.out.println("\n");
         }
 
+        while(true){
+            
+        }
         /*
         //Testing Print Statements
         System.out.println(data);
