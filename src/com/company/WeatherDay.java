@@ -11,6 +11,7 @@ public class WeatherDay {
     double windDegree;
     double atmosphericPressure;
     double humidity;
+    String location;
 
     public WeatherDay(int day){
         dayPosition = day;
