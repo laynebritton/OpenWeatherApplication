@@ -36,7 +36,7 @@ public class MenuExample implements ActionListener {
         weeklyButton.addActionListener(this);
 
         updateButton = new JButton();
-        updateButton.setBounds(500,500,150,50);
+        updateButton.setBounds(500,500,200,50);
         updateButton.setText("Update Weather Data");
         updateButton.addActionListener(this);
 
@@ -109,6 +109,18 @@ public class MenuExample implements ActionListener {
     public void updateAppTitle(String currentLocation){
         appFrame.setTitle("OpenWeatherApp: " + currentLocation);
     }
+    public void updateWeatherData(String location, int locationType) throws Exception {
+        /*
+        Location Type Values
+        0 = City Name
+        1 = Zip Code
+        2 = City ID
+        3 = Longitude and Latitude
+         */
+        weatherRetriever.getForecast(location,locationType);
+        weatherRetriever.loadWeatherCache();
+        weatherRetriever.printWeeklyForecast();
+    }
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if(actionEvent.getSource()==dailyButton){
@@ -122,7 +134,11 @@ public class MenuExample implements ActionListener {
             updateTextArea(weatherRetriever.updateTextAreaWeekly());
         }
         if(actionEvent.getSource()==updateButton){
-            System.out.println(locationTypeSelector.getSelectedIndex());
+            try {
+                updateWeatherData(locationEntry.getText(),locationTypeSelector.getSelectedIndex());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         }
         if(actionEvent.getSource()==i1){
