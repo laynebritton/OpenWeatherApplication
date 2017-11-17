@@ -119,7 +119,6 @@ public class MenuExample implements ActionListener {
          */
         weatherRetriever.getForecast(location,locationType);
         weatherRetriever.loadWeatherCache();
-        weatherRetriever.printWeeklyForecast();
     }
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
@@ -145,7 +144,6 @@ public class MenuExample implements ActionListener {
             //add to favorites
         }
         if(actionEvent.getSource()==i2){
-
             System.exit(0);
         }
     }

@@ -24,14 +24,24 @@ public class WeatherRetriever {
     public WeatherRetriever(){
         forecast = new WeatherDay[16];
     }
-    public void getForecast(String location, int zeroCityoneZipcode) throws Exception{
-        //URL isInternetReachableUrl = new URL("http://google.com");
+    public void getForecast(String location, int locationType) throws Exception{
+        /*  The api call is slightly different based upon the location type requested
+        Location Type Values
+        0 = City Name
+        1 = Zip Code
+        2 = City ID
+        3 = Longitude and Latitude
+         */
         try {
             String urlString = "";
-            if (zeroCityoneZipcode == 0) {
+            if (locationType == 0) {
                 urlString = "http://api.openweathermap.org/data/2.5/forecast?q=" + location + "&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610";
-            } else if (zeroCityoneZipcode == 1) {
+            } else if (locationType == 1) {
                 urlString = "http://api.openweathermap.org/data/2.5/forecast?zip=" + location + "&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610";
+            } else if (locationType == 2){
+                //City ID Call
+            } else if (locationType == 3){
+                //Lon Lat Call
             }
             URL url = new URL(urlString);
             URLConnection con = url.openConnection();
@@ -51,11 +61,11 @@ public class WeatherRetriever {
             inputStream.close();
             fileOutputStream.flush();
             fileOutputStream.close();
+            System.out.println("Data successfully retrieved from: " + location);
             return;
             //Done Writing File
         }catch(Exception e){
             System.out.println("Connection to api.openweathermap.org currently unavailable");
-            System.exit(0);
         }
 
     }
@@ -136,14 +146,3 @@ public class WeatherRetriever {
         return forecast[0].location;
     }
 }
-        /*
-        //Testing Print Statements
-        System.out.println(data);
-
-        String owmVersion = obj.getString("cod");
-        System.out.println(owmVersion);
-
-        String nestingTest = forecastArray.getJSONObject(0).getJSONArray("weather").getJSONObject(0).getString("description");
-        //This goes to list->day0->weather->description
-        System.out.println(nestingTest);
-        */
