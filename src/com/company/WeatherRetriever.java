@@ -2,6 +2,7 @@ package com.company;
 
 import org.json.*;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -90,7 +91,7 @@ public class WeatherRetriever {
             System.out.println("Location: " + forecast[i].location);
             System.out.println("Day: " + i);
             System.out.println("Current Temp: " + forecast[i].currentTemperature + " " + forecast[i].weatherDescription);
-            System.out.println("Humidity: " + forecast[i].currentTemperature);
+            System.out.println("Humidity: " + forecast[i].humidity);
             System.out.println("Atmospheric Pressure: " + forecast[i].atmosphericPressure);
             System.out.println("Wind Speed: " + forecast[i].windSpeed);
             System.out.println("Wind Degree: " + forecast[i].windDegree);
@@ -101,6 +102,39 @@ public class WeatherRetriever {
 
     }
 
+    public JTextArea updateTextAreaWeekly(){
+        JTextArea area = new JTextArea();
+        for(int i=0; i < 7; i++){
+            //area.append("Location: " + forecast[i].location + "\n");
+            area.append("Day: " + i +"\n");
+            area.append("Current Temp: " + forecast[i].currentTemperature + " " + forecast[i].weatherDescription +"\n");
+            area.append("Humidity: " + forecast[i].humidity+"\n");
+            area.append("Atmospheric Pressure: " + forecast[i].atmosphericPressure+"\n");
+            area.append("Wind Speed: " + forecast[i].windSpeed+"\n");
+            area.append("Wind Degree: " + forecast[i].windDegree+"\n");
+            area.append("\n");
+
+        }
+        return area;
+    }
+    public JTextArea updateTextAreaDaily(){
+        JTextArea area = new JTextArea();
+        for(int i=0; i < 1; i++){
+            //area.append("Location: " + forecast[i].location + "\n");
+            area.append("Today's Forecast in " + forecast[i].location + "\n");
+            area.append("Current Temp: " + forecast[i].currentTemperature + " " + forecast[i].weatherDescription +"\n");
+            area.append("Humidity: " + forecast[i].humidity+"\n");
+            area.append("Atmospheric Pressure: " + forecast[i].atmosphericPressure+"\n");
+            area.append("Wind Speed: " + forecast[i].windSpeed+"\n");
+            area.append("Wind Degree: " + forecast[i].windDegree+"\n");
+            area.append("\n");
+
+        }
+        return area;
+    }
+    public String getCurrentLocationName(){
+        return forecast[0].location;
+    }
 }
         /*
         //Testing Print Statements
