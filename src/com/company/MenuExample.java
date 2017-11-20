@@ -355,13 +355,27 @@ public class MenuExample implements ActionListener, MouseListener {
                     currentLocation = tempArray[0];
                     currentLocationType = Integer.parseInt(tempArray[1]);
                 } catch (Exception e) {
-                    //e.printStackTrace();
+                    try{    //Hard coded case for city names with a space in them
+                        updateWeatherData(tempArray[0]+ " " + tempArray[1],0);//This checks if the location is a two spaced name
+                        appFrame.remove(scrollPane);
+                        if(isDaily==true){
+                            updateAppTitle(weatherRetriever.getCurrentLocationName());
+                            updateTextArea(weatherRetriever.updateTextAreaDaily());
+
+                        }else{
+                            updateAppTitle(weatherRetriever.getCurrentLocationName());
+                            updateTextArea(weatherRetriever.updateTextAreaWeekly());
+                        }
+                    }catch (Exception E){
+                        //give up
+                    }
                 }
 
                 updateAppTitle(tempArray[0]);
             }
             if(actionEvent.getSource()==favoritesList[i].getMenuComponent(1)){  //remove
                 try {
+                    System.out.println(favoritesList[i].getText());
                     removeFromFavorites(favoritesList[i].getText());
                 } catch (Exception e) {
                     e.printStackTrace();
