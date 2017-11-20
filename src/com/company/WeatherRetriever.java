@@ -19,12 +19,13 @@ public class WeatherRetriever {
     String urlCall;
     String currentWeatherCache;
     WeatherDay[] forecast;
+
     //URL url = new URL("http://api.openweathermap.org/data/2.5/forecast?q=Moscow&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610");
     //url = new URL("http://api.openweathermap.org/data/2.5/forecast?zip=59102&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610");
     public WeatherRetriever(){
         forecast = new WeatherDay[16];
     }
-    public void getForecast(String location, int locationType) throws Exception{
+    public void getForecast(String location, int locationTypeSetter) throws Exception{
         /*  The api call is slightly different based upon the location type requested
         Location Type Values
         0 = City Name
@@ -34,21 +35,23 @@ public class WeatherRetriever {
          */
         try {
             String urlString = "";
-            if (locationType == 0) {
+            if (locationTypeSetter == 0) {
                 urlString = "http://api.openweathermap.org/data/2.5/forecast?q=" + location + "&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610";
-            } else if (locationType == 1) {
+            } else if (locationTypeSetter == 1) {
                 urlString = "http://api.openweathermap.org/data/2.5/forecast?zip=" + location + "&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610";
-            } else if (locationType == 2){
-                //City ID Call
-            } else if (locationType == 3){
-                //Lon Lat Call
+            } else if (locationTypeSetter == 2){
+                urlString = "http://api.openweathermap.org/data/2.5/forecast?id=" + location + "&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610";
+            } else if (locationTypeSetter == 3){
+                String[] temp = location.split("\\S");
+                urlString = "http://api.openweathermap.org/data/2.5/forecast?lat=" + temp[0] + "&lon=" + temp[1] + "&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610";
+                System.out.println(urlString);
             }
             URL url = new URL(urlString);
             URLConnection con = url.openConnection();
 
             //Taking Stream from Call and writing it to a file
             InputStream inputStream = con.getInputStream();
-            FileOutputStream fileOutputStream = new FileOutputStream(new File("data3.json"));
+            FileOutputStream fileOutputStream = new FileOutputStream(new File(location + "Data.json"));
 
             byte[] buf = new byte[512];
             while (true) {
@@ -69,9 +72,9 @@ public class WeatherRetriever {
         }
 
     }
-    public void loadWeatherCache() throws Exception{
+    public void loadWeatherCache(String location) throws Exception{
     //Open json data and put it into a string so it can be manipulated
-        File weatherCache = new File("data3.json");
+        File weatherCache = new File(location + "Data.json");
         int i;
         FileReader fileReader = new FileReader(weatherCache);
         //String data = "";
@@ -93,7 +96,9 @@ public class WeatherRetriever {
             forecast[i].windSpeed = forecastArray.getJSONObject(i).getJSONObject("wind").getDouble("speed");
             forecast[i].windDegree = forecastArray.getJSONObject(i).getJSONObject("wind").getDouble("deg");
             forecast[i].weatherDescription = forecastArray.getJSONObject(i).getJSONArray("weather").getJSONObject(0).getString("description");
-            forecast[i].location = obj.getJSONObject("city").getString("name");
+            //forecast[i].sunrise =
+            //forecast[i].location = obj.getJSONObject("city").getString("name");
+            forecast[i].location = location;
         }
     }
     public void printWeeklyForecast(){

@@ -1,15 +1,20 @@
 package com.company;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
+import java.util.StringTokenizer;
 
 /**
  * Created by laynebritton on 11/14/17.
  */
 public class MenuExample implements ActionListener {
     JMenu menu, submenu, defaultLocation,favorites;
-    JMenuItem i1,i2,i3,i4,i5;
+    JMenuItem addToFavoritesButton,i2,i3,i4,i5, setAsDefault, goToDefault;
     JButton dailyButton,weeklyButton, updateButton;
     JTextArea textArea;
     JFrame appFrame;
@@ -17,6 +22,10 @@ public class MenuExample implements ActionListener {
     WeatherRetriever weatherRetriever;
     JTextField locationEntry;
     JComboBox locationTypeSelector;
+    String currentLocation;
+    int currentLocationType;
+    JMenuItem[] favoritesList;
+    int totalFavorites;
 
 
     MenuExample(){
@@ -49,12 +58,19 @@ public class MenuExample implements ActionListener {
 
         defaultLocation = new JMenu("Default Location");
         defaultLocation.addActionListener(this);
+        goToDefault = new JMenuItem("Go to default location");
+        goToDefault.addActionListener(this);
+        setAsDefault = new JMenuItem("Set current location as default");
+        setAsDefault.addActionListener(this);
+        defaultLocation.add(goToDefault);
+        defaultLocation.add(setAsDefault);
 
         favorites = new JMenu("Favorites");
+
         submenu = new JMenu("Sub Menu");
 
-        i1 = new JMenuItem("Add To Favorites");
-        i1.addActionListener(this);
+        addToFavoritesButton = new JMenuItem("Add To Favorites");
+        addToFavoritesButton.addActionListener(this);
 
         i2 = new JMenuItem("End Program");
         i2.addActionListener(this);
@@ -62,7 +78,7 @@ public class MenuExample implements ActionListener {
         i3 = new JMenuItem("Item 3");
         i4 = new JMenuItem("Item 4");
         i5 = new JMenuItem("Item 5");
-        menu.add(i1); menu.add(i2); menu.add(i3);
+        menu.add(addToFavoritesButton); menu.add(i2); menu.add(i3);
         submenu.add(i4); submenu.add(i5);
 
         menu.add(submenu);
@@ -118,7 +134,85 @@ public class MenuExample implements ActionListener {
         3 = Longitude and Latitude
          */
         weatherRetriever.getForecast(location,locationType);
-        weatherRetriever.loadWeatherCache();
+        //currentLocation = location;
+        weatherRetriever.loadWeatherCache(location);
+    }
+
+    public void setDefaultLocation(String currentLocation){
+        BufferedWriter bufferedWriter = null;
+
+        try{
+            bufferedWriter = new BufferedWriter(new FileWriter("defaultLocation.txt"));
+            bufferedWriter.write(currentLocation + " " + currentLocationType);
+            bufferedWriter.flush();
+        }catch(IOException ioe){
+            ioe.printStackTrace();
+        }finally{
+            if (bufferedWriter!=null) try{
+                bufferedWriter.close();
+            } catch(IOException ioe){
+
+            }
+        }
+    }
+
+    public void addToFavorites(String currentLocation){
+        BufferedWriter bufferedWriter = null;
+
+        try{
+            bufferedWriter = new BufferedWriter(new FileWriter("favorites.txt",true));
+            bufferedWriter.write(currentLocation + " " + currentLocationType);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+        }catch(IOException ioe){
+            ioe.printStackTrace();
+        }finally{
+            if (bufferedWriter!=null) try{
+                bufferedWriter.close();
+            } catch(IOException ioe){
+
+            }
+        }
+    }
+    public void populateFavorites() throws Exception{
+        totalFavorites = 0; //Resets and overwrites previous favorites
+        File favoriteCache = new File("favorites.txt");
+        favoritesList = new JMenuItem[50];  //Arbitrarily initialized to 50
+        int i;
+        FileReader fileReader = new FileReader(favoriteCache);
+        String favoriteText = "";
+        while((i = fileReader.read())!=-1){
+            char ch = (char)i;
+            favoriteText = favoriteText + ch;
+        }
+        fileReader.close();
+        System.out.println(favoriteText);
+        StringTokenizer stringTokenizer = new StringTokenizer(favoriteText);
+        i = 0;
+        while(stringTokenizer.hasMoreTokens()){
+            favoritesList[i] = new JMenuItem();
+            favoritesList[i].setText(stringTokenizer.nextToken() + " " + stringTokenizer.nextToken());
+            favoritesList[i].addActionListener(this);
+            favorites.add(favoritesList[i]);
+            i++;
+        }
+        totalFavorites = i;
+
+        //Data is now in string
+    }
+    
+    public String[] updateToDefault() throws Exception{
+        File defaultCache = new File("defaultLocation.txt");
+        int i;
+        FileReader fileReader = new FileReader(defaultCache);
+        String defaultText = "";
+        while((i = fileReader.read())!=-1){
+            char ch = (char)i;
+            defaultText = defaultText + ch;
+        }
+        String[] returnString = defaultText.split("\\s");
+        fileReader.close();
+        return returnString;
     }
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
@@ -135,16 +229,58 @@ public class MenuExample implements ActionListener {
         if(actionEvent.getSource()==updateButton){
             try {
                 updateWeatherData(locationEntry.getText(),locationTypeSelector.getSelectedIndex());
+                currentLocationType = locationTypeSelector.getSelectedIndex();
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
         }
-        if(actionEvent.getSource()==i1){
-            //add to favorites
+        if(actionEvent.getSource()==setAsDefault){
+            setDefaultLocation(weatherRetriever.getCurrentLocationName());
+        }
+        if(actionEvent.getSource()==goToDefault){
+            String[] defaultGetter = new String[10];
+            try {
+                defaultGetter = updateToDefault();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                updateWeatherData(defaultGetter[0],Integer.parseInt(defaultGetter[1]));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            updateAppTitle(defaultGetter[0]);
+        }
+        if(actionEvent.getSource()== addToFavoritesButton){
+            for(int i = 0; i < totalFavorites; i++){ //Resets favorites bar
+                favorites.remove(favoritesList[i]);
+            }
+            addToFavorites(weatherRetriever.getCurrentLocationName());
+            try {
+                populateFavorites();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            appFrame.revalidate();
+            appFrame.repaint();
         }
         if(actionEvent.getSource()==i2){
             System.exit(0);
+        }
+        for(int i = 0; i < 50; i ++){
+            if(actionEvent.getSource()==favoritesList[i]){
+                String temp = favoritesList[i].getText();
+                String[] tempArray = temp.split("\\s");
+                try {
+                    updateWeatherData(tempArray[0],Integer.parseInt(tempArray[1]));
+                    currentLocationType = Integer.parseInt(tempArray[1]);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                updateAppTitle(tempArray[0]);
+            }
         }
     }
 }
