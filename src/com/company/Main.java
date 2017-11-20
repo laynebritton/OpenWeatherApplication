@@ -17,6 +17,9 @@ public class Main {
         }
         try {
             menuExample.updateWeatherData(defaultGetter[0],Integer.parseInt(defaultGetter[1]));
+            menuExample.currentLocation=defaultGetter[0];
+            menuExample.currentLocationType=Integer.parseInt(defaultGetter[1]);
+            menuExample.updateTextArea(menuExample.weatherRetriever.updateTextAreaDaily());
             menuExample.updateAppTitle(defaultGetter[0]);
         } catch (Exception e) {
             e.printStackTrace();
@@ -25,5 +28,6 @@ public class Main {
         menuExample.populateFavorites();
         menuExample.appFrame.revalidate();
         menuExample.appFrame.repaint();
+        menuExample.startAutoUpdates();
     }
 }

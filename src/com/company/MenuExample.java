@@ -32,9 +32,12 @@ public class MenuExample implements ActionListener, MouseListener {
     JMenu[] favoritesList;
     int totalFavorites;
     JFrame infoFrame;
-    Timer infoTimer;
+    Timer updateTimer, infoTimer;
+    boolean isDaily; //if it is false then the program is weekly. Program defaults to daily
+    JScrollBar tempScrollBar;
 
     MenuExample(){
+        isDaily = true; //Program defaults to daily view
         weatherRetriever = new WeatherRetriever();
         appFrame = new JFrame("OpenWeatherMap Application Version 0.1");
         JMenuBar menuBar = new JMenuBar();
@@ -240,22 +243,62 @@ public class MenuExample implements ActionListener, MouseListener {
         System.out.println(toDelete + " has been removed from favorites");
     }
 
+    public void startAutoUpdates(){
+        updateTimer = new Timer();
+        updateTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    updateWeatherData(currentLocation,currentLocationType);
+                    tempScrollBar = scrollPane.getVerticalScrollBar();
+                    JScrollBar test = scrollPane.getVerticalScrollBar();
+                    appFrame.remove(scrollPane);
+                    updateAppTitle(weatherRetriever.getCurrentLocationName());
+                    if(isDaily==true){
+
+                        updateTextArea(weatherRetriever.updateTextAreaDaily());
+                    }else{
+                        updateTextArea(weatherRetriever.updateTextAreaWeekly());
+                        scrollPane.getVerticalScrollBar().setValue(tempScrollBar.getValue());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        },60*120,60*120);
+    }
+    public void cancelAutoUpdates(){
+        updateTimer.cancel();
+    }
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
+
         if(actionEvent.getSource()==dailyButton){
             appFrame.remove(scrollPane);
             updateAppTitle(weatherRetriever.getCurrentLocationName());
             updateTextArea(weatherRetriever.updateTextAreaDaily());
+            isDaily = true;
         }
         if(actionEvent.getSource()==weeklyButton){
             appFrame.remove(scrollPane);
             updateAppTitle(weatherRetriever.getCurrentLocationName());
             updateTextArea(weatherRetriever.updateTextAreaWeekly());
+            isDaily = false;
         }
         if(actionEvent.getSource()==updateButton){
             try {
                 updateWeatherData(locationEntry.getText(),locationTypeSelector.getSelectedIndex());
+                currentLocation = locationEntry.getText();
                 currentLocationType = locationTypeSelector.getSelectedIndex();
+                appFrame.remove(scrollPane);
+                if(isDaily==true){
+                    updateAppTitle(weatherRetriever.getCurrentLocationName());
+                    updateTextArea(weatherRetriever.updateTextAreaDaily());
+
+                }else{
+                    updateAppTitle(weatherRetriever.getCurrentLocationName());
+                    updateTextArea(weatherRetriever.updateTextAreaWeekly());
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -300,6 +343,16 @@ public class MenuExample implements ActionListener, MouseListener {
                 String[] tempArray = temp.split("\\s");
                 try {
                     updateWeatherData(tempArray[0],Integer.parseInt(tempArray[1]));
+                    appFrame.remove(scrollPane);
+                    if(isDaily==true){
+                        updateAppTitle(weatherRetriever.getCurrentLocationName());
+                        updateTextArea(weatherRetriever.updateTextAreaDaily());
+
+                    }else{
+                        updateAppTitle(weatherRetriever.getCurrentLocationName());
+                        updateTextArea(weatherRetriever.updateTextAreaWeekly());
+                    }
+                    currentLocation = tempArray[0];
                     currentLocationType = Integer.parseInt(tempArray[1]);
                 } catch (Exception e) {
                     //e.printStackTrace();

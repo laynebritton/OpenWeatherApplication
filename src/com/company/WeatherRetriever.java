@@ -14,13 +14,13 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.StringTokenizer;
 
 /**
  * Created by laynebritton on 11/14/17.
  * This class exists to retrieve the weather data from the api and write to a local file
  */
 public class WeatherRetriever {
-    String urlCall;
     String currentWeatherCache;
     WeatherDay[] forecast;
 
