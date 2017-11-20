@@ -1,11 +1,15 @@
 package com.company;
 
 public class Main {
-    //This is an api call that worked for daily
-    //http://api.openweathermap.org/data/2.5/weather?q=London&cnt=7&appid=2b290376f4e81ff3eb5ef82867095610
+    //Hovering over the update weather data button for three seconds provides
+    //A brief menu describing how to use the application
 
-    //This is an api call that worked for forecast
-    //http://api.openweathermap.org/data/2.5/forecast?q=Seattle&cnt=7&appid=2b290376f4e81ff3eb5ef82867095610
+    //In order for offline caching to work, the location requested needs to have
+    //been connected to by internet previously
+
+    //The application needs its defaultLocation.txt file in order to launch
+    //automatic weather updates while in use.
+    //If the file is gone, just set any location as the default location the relaunch the app
     public static void main(String[] args) throws Exception {
         MenuExample menuExample = new MenuExample();
         //Open Default Config
@@ -28,6 +32,6 @@ public class Main {
         menuExample.populateFavorites();
         menuExample.appFrame.revalidate();
         menuExample.appFrame.repaint();
-        menuExample.startAutoUpdates();
+        menuExample.startAutoUpdates(); //This only works if the application has a default location prior to launch
     }
 }

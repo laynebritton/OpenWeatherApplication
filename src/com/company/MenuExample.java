@@ -287,6 +287,7 @@ public class MenuExample implements ActionListener, MouseListener {
         }
         if(actionEvent.getSource()==updateButton){
             try {
+
                 updateWeatherData(locationEntry.getText(),locationTypeSelector.getSelectedIndex());
                 currentLocation = locationEntry.getText();
                 currentLocationType = locationTypeSelector.getSelectedIndex();
@@ -420,7 +421,7 @@ public class MenuExample implements ActionListener, MouseListener {
 
                     JTextArea infoText = new JTextArea();
 
-                    infoText.setText("To get weather data for a city:\n Enter its info into the text field\n Choose type of location from dropdown menu \n Click Update Button\n Then click either daily or weekly weather \n \n Latitude and longitude coordinates\n should be separated by a - symbol\n\n Examples\n Seattle (City example)\n 59102 (Zip code example) \n 524901 (City ID example) \n 30-175 (Lat&Lon Example)");
+                    infoText.setText("To get weather data for a city:\n Enter its info into the text field\n Choose type of location from dropdown menu \n Click Update Button\n Then click either daily or weekly weather \n Multiword cities and \n Latitude and longitude coordinates\n should be separated by a - symbol\n\n Examples\n\n San-Francisco (City example)\n 59102 (Zip code example) \n 524901 (City ID example) \n 30-175 (Lat&Lon example)\n Seattle (City example)");
                     infoText.setBounds(0,0,300,250);
                     infoPane = new JScrollPane(infoText);
 

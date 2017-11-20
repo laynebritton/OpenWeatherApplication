@@ -40,7 +40,16 @@ public class WeatherRetriever {
         try {
             String urlString = "";
             if (locationTypeSetter == 0) {
+                String[] temp = location.split("\\-");
+                String oldLocationHolder = location;    //Handles multiword names. Useless if single word name
+                if(temp.length==2){
+                    location = temp[0]+" "+temp[1];
+                }
+                if(temp.length==3){
+                    location = temp[0]+" "+temp[1]+" "+temp[2];
+                }
                 urlString = "http://api.openweathermap.org/data/2.5/forecast?q=" + location + "&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610";
+                location = oldLocationHolder;
             } else if (locationTypeSetter == 1) {
                 urlString = "http://api.openweathermap.org/data/2.5/forecast?zip=" + location + "&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610";
             } else if (locationTypeSetter == 2){
