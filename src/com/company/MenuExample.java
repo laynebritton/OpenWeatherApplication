@@ -197,8 +197,14 @@ public class MenuExample implements ActionListener {
             i++;
         }
         totalFavorites = i;
+        for(i=i; i < 50; i++){
+            favoritesList[i] = new JMenu();
+            //Filling the remained of the array with initialized JMenus
+            //To avoid null pointer exceptions later when checking for submenu interactions
+            //Yes, it's gross. Time constraints have caused this
+        }
 
-        //Data is now in string
+
     }
     
     public String[] updateToDefault() throws Exception{
@@ -214,6 +220,24 @@ public class MenuExample implements ActionListener {
         fileReader.close();
         return returnString;
     }
+    private void removeFromFavorites(String toDelete) throws Exception {
+        File inputFile = new File("favorites.txt");
+        File tempFile = new File("temp.txt");
+        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+
+        String currentLine;
+        while((currentLine = reader.readLine())!=null){
+            String trimmedLine = currentLine.trim();
+            if(trimmedLine.equals(toDelete)) continue;
+            writer.write(currentLine + System.getProperty("line.separator"));
+        }
+        writer.close();
+        reader.close();
+        tempFile.renameTo(inputFile);
+        System.out.println(toDelete + " has been removed from favorites");
+    }
+
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if(actionEvent.getSource()==dailyButton){
@@ -276,10 +300,24 @@ public class MenuExample implements ActionListener {
                     updateWeatherData(tempArray[0],Integer.parseInt(tempArray[1]));
                     currentLocationType = Integer.parseInt(tempArray[1]);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
 
                 updateAppTitle(tempArray[0]);
+            }
+            if(actionEvent.getSource()==favoritesList[i].getMenuComponent(1)){  //remove
+                try {
+                    removeFromFavorites(favoritesList[i].getText());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    populateFavorites();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                appFrame.revalidate();
+                appFrame.repaint();
             }
         }
     }
