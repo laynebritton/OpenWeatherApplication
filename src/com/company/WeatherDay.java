@@ -14,7 +14,9 @@ public class WeatherDay {
     String location;
     int locationType;
     String creationTime;
-
+    String timeThisDayRepresents;
+    double tempLow;
+    double tempHigh;
     public WeatherDay(int day){
         dayPosition = day;
     }

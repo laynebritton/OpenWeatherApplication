@@ -27,7 +27,7 @@ public class WeatherRetriever {
     //URL url = new URL("http://api.openweathermap.org/data/2.5/forecast?q=Moscow&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610");
     //url = new URL("http://api.openweathermap.org/data/2.5/forecast?zip=59102&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610");
     public WeatherRetriever(){
-        forecast = new WeatherDay[16];
+        forecast = new WeatherDay[56];
     }
     public void getForecast(String location, int locationTypeSetter) throws Exception{
         /*  The api call is slightly different based upon the location type requested
@@ -48,17 +48,17 @@ public class WeatherRetriever {
                 if(temp.length==3){
                     location = temp[0]+" "+temp[1]+" "+temp[2];
                 }
-                urlString = "http://api.openweathermap.org/data/2.5/forecast?q=" + location + "&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610";
+                urlString = "http://api.openweathermap.org/data/2.5/forecast?q=" + location + "&cnt=56&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610";
                 location = oldLocationHolder;
             } else if (locationTypeSetter == 1) {
-                urlString = "http://api.openweathermap.org/data/2.5/forecast?zip=" + location + "&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610";
+                urlString = "http://api.openweathermap.org/data/2.5/forecast?zip=" + location + "&cnt=56&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610";
             } else if (locationTypeSetter == 2){
-                urlString = "http://api.openweathermap.org/data/2.5/forecast?id=" + location + "&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610";
+                urlString = "http://api.openweathermap.org/data/2.5/forecast?id=" + location + "&cnt=56&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610";
             } else if (locationTypeSetter == 3){
                 String[] temp = location.split("\\-");
                 System.out.println(temp[0]);
                 System.out.println(temp[1]);
-                urlString = "http://api.openweathermap.org/data/2.5/forecast?lat=" + temp[0] + "&lon=" + temp[1] + "&cnt=7&appid=2b290376f4e81ff3eb5ef82867095610";
+                urlString = "http://api.openweathermap.org/data/2.5/forecast?lat=" + temp[0] + "&lon=" + temp[1] + "&cnt=56&appid=2b290376f4e81ff3eb5ef82867095610";
             }
             URL url = new URL(urlString);
             URLConnection con = url.openConnection();
@@ -105,10 +105,13 @@ public class WeatherRetriever {
         //Data is now in string
         JSONObject obj = new JSONObject(currentWeatherCache);
         JSONArray forecastArray = obj.getJSONArray("list");
-        for(i = 0; i < 7; i++){
+        for(i = 0; i < 40; i++){
             forecast[i] = new WeatherDay(i);
+            forecast[i].timeThisDayRepresents = forecastArray.getJSONObject(i).getString("dt_txt");
             forecast[i].creationTime = attr.creationTime().toString();
             forecast[i].currentTemperature = forecastArray.getJSONObject(i).getJSONObject("main").getDouble("temp");
+            forecast[i].tempLow = forecastArray.getJSONObject(i).getJSONObject("main").getDouble("temp_min");
+            forecast[i].tempHigh = forecastArray.getJSONObject(i).getJSONObject("main").getDouble("temp_max");
             forecast[i].humidity = forecastArray.getJSONObject(i).getJSONObject("main").getDouble("humidity");
             forecast[i].atmosphericPressure = forecastArray.getJSONObject(i).getJSONObject("main").getDouble("pressure");
             forecast[i].windSpeed = forecastArray.getJSONObject(i).getJSONObject("wind").getDouble("speed");
@@ -120,7 +123,7 @@ public class WeatherRetriever {
         }
     }
     public void printWeeklyForecast(){
-        for(int i=0; i < 7; i++){
+        for(int i=0; i < 40; i++){
             System.out.println("Location: " + forecast[i].location);
             System.out.println("Day: " + i);
             System.out.println("Current Temp: " + forecast[i].currentTemperature + " " + forecast[i].weatherDescription);
@@ -138,15 +141,17 @@ public class WeatherRetriever {
     public JTextArea updateTextAreaWeekly(){
         JTextArea area = new JTextArea();
         area.append("Last Updated: " + forecast[0].creationTime+"\n");
-        for(int i=0; i < 7; i++){
+        for(int i=0; i < 40; i++){
             //area.append("Location: " + forecast[i].location + "\n");
-            area.append("Day: " + i +"\n");
-            area.append("Current Temp: " + forecast[i].currentTemperature + " " + forecast[i].weatherDescription +"\n");
+            area.append(forecast[i].timeThisDayRepresents + "\n");
+            area.append("Temperature: " + forecast[i].currentTemperature + " " + forecast[i].weatherDescription +"\n");
+            area.append("Temp Low: " + forecast[i].tempLow+"\n");
+            area.append("Temp High: " + forecast[i].tempHigh+"\n");
             area.append("Humidity: " + forecast[i].humidity+"\n");
             area.append("Atmospheric Pressure: " + forecast[i].atmosphericPressure+"\n");
             area.append("Wind Speed: " + forecast[i].windSpeed+"\n");
             area.append("Wind Degree: " + forecast[i].windDegree+"\n");
-            area.append("\n");
+            area.append("\n\n");
 
         }
         return area;
