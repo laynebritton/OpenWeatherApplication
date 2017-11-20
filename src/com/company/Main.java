@@ -9,7 +9,7 @@ public class Main {
 
     //The application needs its defaultLocation.txt file in order to launch
     //automatic weather updates while in use.
-    //If the file is gone, just set any location as the default location the relaunch the app
+    //If the file is gone, just set any location as the default location, then relaunch the app
     public static void main(String[] args) throws Exception {
         MenuExample menuExample = new MenuExample();
         //Open Default Config
