@@ -12,9 +12,8 @@ public class WeatherDay {
     double atmosphericPressure;
     double humidity;
     String location;
-    double sunrise;
-    double sunset;
     int locationType;
+    String creationTime;
 
     public WeatherDay(int day){
         dayPosition = day;

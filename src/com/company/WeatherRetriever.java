@@ -10,6 +10,10 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 
 /**
  * Created by laynebritton on 11/14/17.
@@ -42,8 +46,10 @@ public class WeatherRetriever {
             } else if (locationTypeSetter == 2){
                 urlString = "http://api.openweathermap.org/data/2.5/forecast?id=" + location + "&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610";
             } else if (locationTypeSetter == 3){
-                String[] temp = location.split("\\S");
-                urlString = "http://api.openweathermap.org/data/2.5/forecast?lat=" + temp[0] + "&lon=" + temp[1] + "&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610";
+                String[] temp = location.split("\\-");
+                System.out.println(temp[0]);
+                System.out.println(temp[1]);
+                urlString = "http://api.openweathermap.org/data/2.5/forecast?lat=" + temp[0] + "&lon=" + temp[1] + "&cnt=7&appid=2b290376f4e81ff3eb5ef82867095610";
                 System.out.println(urlString);
             }
             URL url = new URL(urlString);
@@ -75,6 +81,9 @@ public class WeatherRetriever {
     public void loadWeatherCache(String location) throws Exception{
     //Open json data and put it into a string so it can be manipulated
         File weatherCache = new File(location + "Data.json");
+        Path file = FileSystems.getDefault().getPath(location + "Data.json");
+        BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
+        System.out.println("Weather Last Updated: " + attr.creationTime());
         int i;
         FileReader fileReader = new FileReader(weatherCache);
         //String data = "";
@@ -90,6 +99,7 @@ public class WeatherRetriever {
         JSONArray forecastArray = obj.getJSONArray("list");
         for(i = 0; i < 7; i++){
             forecast[i] = new WeatherDay(i);
+            forecast[i].creationTime = attr.creationTime().toString();
             forecast[i].currentTemperature = forecastArray.getJSONObject(i).getJSONObject("main").getDouble("temp");
             forecast[i].humidity = forecastArray.getJSONObject(i).getJSONObject("main").getDouble("humidity");
             forecast[i].atmosphericPressure = forecastArray.getJSONObject(i).getJSONObject("main").getDouble("pressure");
@@ -119,6 +129,7 @@ public class WeatherRetriever {
 
     public JTextArea updateTextAreaWeekly(){
         JTextArea area = new JTextArea();
+        area.append("Last Updated: " + forecast[0].creationTime+"\n");
         for(int i=0; i < 7; i++){
             //area.append("Location: " + forecast[i].location + "\n");
             area.append("Day: " + i +"\n");
@@ -142,8 +153,7 @@ public class WeatherRetriever {
             area.append("Atmospheric Pressure: " + forecast[i].atmosphericPressure+"\n");
             area.append("Wind Speed: " + forecast[i].windSpeed+"\n");
             area.append("Wind Degree: " + forecast[i].windDegree+"\n");
-            area.append("\n");
-
+            area.append("Last Updated: " + forecast[i].creationTime+"\n");
         }
         return area;
     }

@@ -24,7 +24,7 @@ public class MenuExample implements ActionListener {
     JComboBox locationTypeSelector;
     String currentLocation;
     int currentLocationType;
-    JMenuItem[] favoritesList;
+    JMenu[] favoritesList;
     int totalFavorites;
 
 
@@ -67,21 +67,15 @@ public class MenuExample implements ActionListener {
 
         favorites = new JMenu("Favorites");
 
-        submenu = new JMenu("Sub Menu");
 
-        addToFavoritesButton = new JMenuItem("Add To Favorites");
+        addToFavoritesButton = new JMenuItem("Add current location to favorites");
         addToFavoritesButton.addActionListener(this);
 
         i2 = new JMenuItem("End Program");
         i2.addActionListener(this);
 
-        i3 = new JMenuItem("Item 3");
-        i4 = new JMenuItem("Item 4");
-        i5 = new JMenuItem("Item 5");
-        menu.add(addToFavoritesButton); menu.add(i2); menu.add(i3);
-        submenu.add(i4); submenu.add(i5);
+        menu.add(addToFavoritesButton); menu.add(i2);
 
-        menu.add(submenu);
         menuBar.add(menu);
         menuBar.add(defaultLocation);
         menuBar.add(favorites);
@@ -177,7 +171,7 @@ public class MenuExample implements ActionListener {
     public void populateFavorites() throws Exception{
         totalFavorites = 0; //Resets and overwrites previous favorites
         File favoriteCache = new File("favorites.txt");
-        favoritesList = new JMenuItem[50];  //Arbitrarily initialized to 50
+        favoritesList = new JMenu[50];  //Arbitrarily initialized to 50
         int i;
         FileReader fileReader = new FileReader(favoriteCache);
         String favoriteText = "";
@@ -190,8 +184,14 @@ public class MenuExample implements ActionListener {
         StringTokenizer stringTokenizer = new StringTokenizer(favoriteText);
         i = 0;
         while(stringTokenizer.hasMoreTokens()){
-            favoritesList[i] = new JMenuItem();
+            favoritesList[i] = new JMenu();
             favoritesList[i].setText(stringTokenizer.nextToken() + " " + stringTokenizer.nextToken());
+            JMenuItem use = new JMenuItem("Update");
+            use.addActionListener(this);
+            JMenuItem remove = new JMenuItem("Remove from favorites");
+            remove.addActionListener(this);
+            favoritesList[i].add(use);
+            favoritesList[i].add(remove);
             favoritesList[i].addActionListener(this);
             favorites.add(favoritesList[i]);
             i++;
@@ -269,7 +269,7 @@ public class MenuExample implements ActionListener {
             System.exit(0);
         }
         for(int i = 0; i < 50; i ++){
-            if(actionEvent.getSource()==favoritesList[i]){
+            if(actionEvent.getSource()==favoritesList[i].getMenuComponent(0)){  //Updates
                 String temp = favoritesList[i].getText();
                 String[] tempArray = temp.split("\\s");
                 try {
