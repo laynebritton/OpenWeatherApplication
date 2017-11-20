@@ -50,7 +50,6 @@ public class WeatherRetriever {
                 System.out.println(temp[0]);
                 System.out.println(temp[1]);
                 urlString = "http://api.openweathermap.org/data/2.5/forecast?lat=" + temp[0] + "&lon=" + temp[1] + "&cnt=7&appid=2b290376f4e81ff3eb5ef82867095610";
-                System.out.println(urlString);
             }
             URL url = new URL(urlString);
             URLConnection con = url.openConnection();

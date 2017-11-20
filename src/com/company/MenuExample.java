@@ -4,21 +4,26 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.*;
 import java.util.StringTokenizer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by laynebritton on 11/14/17.
  */
-public class MenuExample implements ActionListener {
+public class MenuExample implements ActionListener, MouseListener {
     JMenu menu, submenu, defaultLocation,favorites;
     JMenuItem addToFavoritesButton,i2,i3,i4,i5, setAsDefault, goToDefault;
     JButton dailyButton,weeklyButton, updateButton;
     JTextArea textArea;
     JFrame appFrame;
-    JScrollPane scrollPane;
+    JScrollPane scrollPane,infoPane;
     WeatherRetriever weatherRetriever;
     JTextField locationEntry;
     JComboBox locationTypeSelector;
@@ -26,7 +31,8 @@ public class MenuExample implements ActionListener {
     int currentLocationType;
     JMenu[] favoritesList;
     int totalFavorites;
-
+    JFrame infoFrame;
+    Timer infoTimer;
 
     MenuExample(){
         weatherRetriever = new WeatherRetriever();
@@ -48,6 +54,7 @@ public class MenuExample implements ActionListener {
         updateButton.setBounds(500,500,200,50);
         updateButton.setText("Update Weather Data");
         updateButton.addActionListener(this);
+        updateButton.addMouseListener(this);
 
         appFrame.add(dailyButton);
         appFrame.add(weeklyButton);
@@ -84,15 +91,10 @@ public class MenuExample implements ActionListener {
         locationEntry.setBounds(20,500,150,30);
         appFrame.add(locationEntry);
 
-        //Dropdown Menu
-        /*
-        locationTypeSelector = new JToolBar("Testing Shit");
-        locationTypeSelector.setRollover(true);
-        JButton delete = new JButton("test1");
-        locationTypeSelector.add(new JComboBox(new String[] {"opt1", "opt2","opt3","opt4"}));
-        */
+
         locationTypeSelector = new JComboBox(new String[] {"City Name", "Zip Code","City ID","Lat & Lon"});
         locationTypeSelector.setBounds(180,500,150,30);
+        locationTypeSelector.addMouseListener(this);
         appFrame.add(locationTypeSelector);
 
         appFrame.setJMenuBar(menuBar);
@@ -312,6 +314,9 @@ public class MenuExample implements ActionListener {
                     e.printStackTrace();
                 }
                 try {
+                    for(int j = 0; j < totalFavorites; j++){ //Resets favorites bar
+                        favorites.remove(favoritesList[j]);
+                    }
                     populateFavorites();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -319,6 +324,68 @@ public class MenuExample implements ActionListener {
                 appFrame.revalidate();
                 appFrame.repaint();
             }
+        }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent mouseEvent) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent mouseEvent) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent mouseEvent) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent mouseEvent) {
+        infoTimer = new Timer();
+        infoTimer.schedule(new TimerTask() {    //All menus wait 5 seconds before appearing
+            @Override
+            public void run() {
+                if (mouseEvent.getSource()==updateButton && infoFrame==null){
+                    //JOptionPane.showMessageDialog(null,"Test\nTest2\nTest3\nlll");
+
+                    JTextArea infoText = new JTextArea();
+
+                    infoText.setText("To get weather data for a city:\n Enter its info into the text field\n Choose type of location from dropdown menu \n Click Update Button\n Then click either daily or weekly weather \n \n Latitude and longitude coordinates\n should be separated by a - symbol\n\n Examples\n Seattle (City example)\n 59102 (Zip code example) \n 524901 (City ID example) \n 30-175 (Lat&Lon Example)");
+                    infoText.setBounds(0,0,300,250);
+                    infoPane = new JScrollPane(infoText);
+
+                    infoFrame = new JFrame();
+                    infoFrame.getContentPane().add(infoText,BorderLayout.CENTER);
+                    infoFrame.setSize(300,250);
+
+                    infoFrame.setLocationRelativeTo(mouseEvent.getComponent());
+                    Rectangle rect = infoFrame.getBounds();
+                    //rect.x = rect.x +250;
+                    rect.y = rect.y  - 200;
+                    infoFrame.setBounds(rect);
+                    infoFrame.add(infoPane);
+
+                    infoFrame.setLayout(null);
+                    infoFrame.setVisible(true);
+                    infoFrame.revalidate();
+                    infoFrame.repaint();
+
+                };
+            }
+        },60*45,60*45);
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent mouseEvent) {
+        infoTimer.cancel();
+        if(infoFrame!=null && mouseEvent.getSource()==updateButton){
+            infoFrame.dispose();
+
+            infoFrame = null;
         }
     }
 }
