@@ -23,6 +23,7 @@ import java.util.StringTokenizer;
 public class WeatherRetriever {
     String currentWeatherCache;
     WeatherDay[] forecast;
+    int numberOfWeatherDays;
 
     //URL url = new URL("http://api.openweathermap.org/data/2.5/forecast?q=Moscow&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610");
     //url = new URL("http://api.openweathermap.org/data/2.5/forecast?zip=59102&cnt=7&units=imperial&appid=2b290376f4e81ff3eb5ef82867095610");
@@ -105,7 +106,8 @@ public class WeatherRetriever {
         //Data is now in string
         JSONObject obj = new JSONObject(currentWeatherCache);
         JSONArray forecastArray = obj.getJSONArray("list");
-        for(i = 0; i < 40; i++){
+        numberOfWeatherDays = forecastArray.length();
+        for(i = 0; i < numberOfWeatherDays; i++){
             forecast[i] = new WeatherDay(i);
             forecast[i].timeThisDayRepresents = forecastArray.getJSONObject(i).getString("dt_txt");
             forecast[i].creationTime = attr.creationTime().toString();
@@ -123,7 +125,7 @@ public class WeatherRetriever {
         }
     }
     public void printWeeklyForecast(){
-        for(int i=0; i < 40; i++){
+        for(int i=0; i < numberOfWeatherDays; i++){
             System.out.println("Location: " + forecast[i].location);
             System.out.println("Day: " + i);
             System.out.println("Current Temp: " + forecast[i].currentTemperature + " " + forecast[i].weatherDescription);
@@ -141,7 +143,7 @@ public class WeatherRetriever {
     public JTextArea updateTextAreaWeekly(){
         JTextArea area = new JTextArea();
         area.append("Last Updated: " + forecast[0].creationTime+"\n");
-        for(int i=0; i < 40; i++){
+        for(int i=0; i < numberOfWeatherDays; i++){
             //area.append("Location: " + forecast[i].location + "\n");
             area.append(forecast[i].timeThisDayRepresents + "\n");
             area.append("Temperature: " + forecast[i].currentTemperature + " " + forecast[i].weatherDescription +"\n");
